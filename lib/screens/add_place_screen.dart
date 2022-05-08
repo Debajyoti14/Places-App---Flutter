@@ -1,40 +1,43 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/widgets/image_input.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/image_input.dart';
 import '../providers/great_places.dart';
 
-class AddPlacesScreen extends StatefulWidget {
-  static const routeName = '/Add-Places';
+class AddPlaceScreen extends StatefulWidget {
+  static const routeName = '/add-place';
+
   @override
-  State<AddPlacesScreen> createState() => _AddPlacesScreenState();
+  _AddPlaceScreenState createState() => _AddPlaceScreenState();
 }
 
-class _AddPlacesScreenState extends State<AddPlacesScreen> {
+class _AddPlaceScreenState extends State<AddPlaceScreen> {
   final _titleController = TextEditingController();
   File _pickedImage;
 
-  void _selectImage(File pickedImage) {
+  void selectImage(File pickedImage) {
     _pickedImage = pickedImage;
   }
 
-  void _savePlace() {
+  void savePlace() {
     if (_titleController.text.isEmpty || _pickedImage == null) {
       return;
+    } else {
+      Provider.of<GreatPlaces>(context, listen: false)
+          .addPlace(_titleController.text, _pickedImage);
+      Navigator.of(context).pop();
     }
-    Provider.of<GreatPlaces>(context, listen: false)
-        .addPlace(_titleController.text, _pickedImage);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add places"),
+        title: Text('Add a New Place'),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
@@ -50,19 +53,22 @@ class _AddPlacesScreenState extends State<AddPlacesScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    ImageInput(_selectImage),
+                    ImageInput(selectImage),
                   ],
                 ),
               ),
             ),
           ),
           RaisedButton.icon(
-              icon: Icon(Icons.add),
-              label: Text("Add Place"),
-              onPressed: _savePlace,
-              elevation: 0,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              color: Theme.of(context).accentColor)
+            icon: Icon(Icons.add),
+            label: Text('Add Place'),
+            onPressed: () {
+              savePlace();
+            },
+            elevation: 0,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            color: Theme.of(context).accentColor,
+          ),
         ],
       ),
     );
